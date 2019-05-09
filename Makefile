@@ -42,18 +42,19 @@ else
     $(error gcc >= 4.8.5 or intel >= 13 is required to compile)
 endif
 
-MKLPATH  = $(MKLROOT)/lib/intel64
+MKLLIB  = $(MKLROOT)/lib/intel64
+MKLINC = $(MKLROOT)/include
 # build link list for MKL libraries, note gcc requires a different threading library
-MKLLDOPT = -Wl,--start-group $(MKLPATH)/libmkl_intel_ilp64.a $(MKLPATH)/libmkl_core.a
+MKLLDOPT = -Wl,-rpath,$(MKLLIB) -L$(MKLLIB) -lmkl_core -lmkl_interl_lp64
 ifeq ($(CXX),g++)
-		MKLLDOPT += $(MKLPATH)/libmkl_gnu_thread.a
+		MKLLDOPT += -lmkl_gnu_thread
 else
-		MKLLDOPT += $(MKLPATH)/libmkl_intel_thread.a
+		MKLLDOPT += -lmkl_intel_thread
 endif
-MKLLDOPT += -Wl,--end-group
+MKLLDOPT += -liomp5 -pthread
 
 # compiler configuration
-override CXXOPTS := -std=c++11 -O3 -g3 -Wall -Wextra -fno-omit-frame-pointer -fopenmp -pthread $(CXXOPTS)
+override CXXOPTS := -std=c++11 -O3 -g3 -Wall -Wextra -fno-omit-frame-pointer -fopenmp -pthread -D_IMKL -I$(MKLINC) $(CXXOPTS)
 override LDOPTS  := -Wl,--as-needed $(MKLLDOPT) $(LDOPTS) -lrt -Wl,--no-as-needed -ldl
 
 # add coverage flags if requested
