@@ -54,7 +54,7 @@ MKLLDOPT += -Wl,--end-group
 
 # compiler configuration
 override CXXOPTS := -std=c++11 -O3 -g3 -Wall -Wextra -fno-omit-frame-pointer -fopenmp -pthread $(CXXOPTS)
-override LDOPTS  := -Wl,--as-needed $(MKLLDOPT) -lpcre2-8 $(LDOPTS) -lrt -Wl,--no-as-needed -ldl
+override LDOPTS  := -Wl,--as-needed $(MKLLDOPT) $(LDOPTS) -lrt -Wl,--no-as-needed -ldl
 
 # add coverage flags if requested
 ifeq ($(COVERAGE),1)
